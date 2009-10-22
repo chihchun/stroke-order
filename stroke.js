@@ -15,6 +15,68 @@ function StrokeHandler (root){
 }
 
 $.extend(StrokeHandler.prototype, {
+
+        draw: function () {
+            this.loadWord();
+        },
+
+        loadWord: function () {
+             var p = this;
+             // create a new svg
+             $('#svgbasics').svg();
+             // get the svg 
+             this.svg = $('#svgbasics').svg('get');
+             $.ajax({
+                type: "GET",
+                // url: "B3B0.xml",
+                url: "C1A6.xml",
+                dataType: "xml",
+		success: function(xml) {
+                    p._xml = $(xml);
+                    $(xml).find('Stroke').each(function() {
+                        p.drawStroke(this);
+                    });
+		}
+	     });
+
+        },
+
+        drawStroke: function (xmlTag) {
+                var handler = this;
+                var svg = this.svg;
+                var path = svg.createPath(); 
+                var mask = svg.mask(null, 'myMask', 0, 0, 200, 200, {maskUnits: 'userSpaceOnUse'});
+                this.group = this.svg.group();
+
+                $(xmlTag).find('Outline').each ( function () {
+                        path = svg.createPath();
+                        $(this).children().each( function () {
+                            handler._drawOutline(this, path);
+                            });
+                        svg.path(handler.group, path, 
+                            {fill: 'none', stroke: '#D90000', strokeWidth: 1});
+                });
+
+/*
+                svg.linearGradient(handler.group,
+                        'gradient', 
+                        [[0, 'black'], [1, 'black']], 0, 0, 200, 200, 
+                        {gradientUnits: 'userSpaceOnUse'});
+                // gradient
+*/
+                // path = svg.createPath();
+                $(xmlTag).find('Track').children().each ( function () {
+                        var xmlTag = this;
+                        if(this.tagName == 'MoveTo') {
+                                path.line($(xmlTag).attr('x'), $(xmlTag).attr('y'), false);
+                                // path = path.move($(xmlTag).attr('x'), $(xmlTag).attr('y'), false);
+                                svg.path(handler.group, path, 
+                                    {fill: 'none', stroke: '#000000', strokeWidth: 10});
+                        }
+                });
+                this.group.setAttribute("transform", "scale(0.1, 0.1)");
+        },
+
         _drawOutline: function(xmlTag, path) {
             if(xmlTag.tagName == 'MoveTo') {
                 path = path.move($(xmlTag).attr('x'), $(xmlTag).attr('y'),false);
@@ -25,64 +87,37 @@ $.extend(StrokeHandler.prototype, {
                     $(xmlTag).attr('x1'), 
                     $(xmlTag).attr('y1'),
                     $(xmlTag).attr('x2'),
-                    $(xmlTag).attr('y2'), false);
+                    $(xmlTag).attr('y2'), 
+                    false);
             }
 
             if(xmlTag.tagName == 'LineTo') {
-                path = path.line($(xmlTag).attr('x'), 
-                    $(xmlTag).attr('y'));
+                path = path.line(
+                    $(xmlTag).attr('x'), 
+                    $(xmlTag).attr('y')
+                    );
+            }
+
+            if(xmlTag.tagName == 'CubicTo') {
+                path = path.curveQ(
+                        $(xmlTag).attr('x1'), 
+                        $(xmlTag).attr('y1'),
+                        $(xmlTag).attr('x2'),
+                        $(xmlTag).attr('y2'), 
+                        false);
+                path = path.curveQ(
+                        $(xmlTag).attr('x2'), 
+                        $(xmlTag).attr('y2'),
+                        $(xmlTag).attr('x3'),
+                        $(xmlTag).attr('y3'), 
+                        false);
             }
         },
 
-        drawStroke: function () {
-                var path = this.svg.createPath(); 
-                var svg = this.svg;
-                var p = this;
-                this._xml.find('Outline').each ( function () {
-                        path = svg.createPath();
-                        $(this).children().each( function () {
-                            p._drawOutline(this, path);
-                            });
-                        svg.path(p.group, path, 
-                            {fill: 'none', stroke: '#D90000', strokeWidth: 10});
-                });
-        },
-
-        loadWord: function () {
-             var p = this;
-             // create a new svg
-             $('#svgbasics').svg();
-             // get the svg 
-             this.svg = $('#svgbasics').svg('get');
-             this.group = this.svg.group(null);
-             $.ajax({
-                type: "GET",
-                url: "B3B0.xml",
-                dataType: "xml",
-		success: function(xml) {
-                    p._xml = $(xml);
-                    $(xml).find('Stroke').each(function() {
-                        p.drawStroke();
-                    });
-		}
-	     });
-
-             $('g').get(0).setAttribute("transform", "scale(0.1, 0.1)");
-        },
-
-        draw: function () {
-            this.loadWord();
-        }
 });
 
 $.fn.stroke = function(options) {
     return new StrokeHandler(this.get(0), options || {});
-    /*
-    this.each(function() {
-            alert(this);
-            return new StrokeHandler(this, options || {});
-            }
-    )
-    */
 };
+
 })(jQuery);
