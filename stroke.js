@@ -8,7 +8,7 @@
 
 ;(function($) { // Hide scope, no $ conflict
 
-function StrokeHandler (root){
+function StrokeHandler (root) {
    this._root = root; 
    this._xml;
    this.svg;
@@ -26,6 +26,8 @@ $.extend(StrokeHandler.prototype, {
              $('#svgbasics').svg();
              // get the svg 
              this.svg = $('#svgbasics').svg('get');
+             this.mask = this.svg.mask(null, 'WordMask', 0, 0, 2000, 2000, {maskUnits: 'userSpaceOnUse'});
+
              $.ajax({
                 type: "GET",
                 url: "B3B0.xml",
@@ -39,43 +41,40 @@ $.extend(StrokeHandler.prototype, {
 		}
 	     });
 
+             // this.svg.rect(null, 0, 0, 200, 200, 0, 0, {fill: 'yellow', stroke: 'navy', strokeWidth: 0, mask: "url(#WordMask)"});
+             // this.svg.circle(null, 410, 476, 100, {fill: 'yellow', stroke: 'blue', strokeWidth: 1, mask: "url(#WordMask)", transform: "scale(0.1)"});
         },
 
         drawStroke: function (xmlTag) {
                 var handler = this;
                 var svg = this.svg;
                 var path = svg.createPath(); 
-                var mask = svg.mask(null, 'myMask', 0, 0, 200, 200, {maskUnits: 'userSpaceOnUse'});
-                this.group = this.svg.group();
+                this.group = this.svg.group(handler.mask);
 
+                // outline
                 $(xmlTag).find('Outline').each ( function () {
                         path = svg.createPath();
                         $(this).children().each( function () {
                             handler._drawOutline(this, path);
                         });
-                        svg.path(handler.group, path, 
-                            {fill: 'none', stroke: '#D90000', strokeWidth: 1});
+                        svg.path(handler.group, path, {fill: 'white', stroke: '#D90000', strokeWidth: 1});
                 });
 
-/*
-                svg.linearGradient(handler.group,
-                        'gradient', 
-                        [[0, 'black'], [1, 'black']], 0, 0, 200, 200, 
-                        {gradientUnits: 'userSpaceOnUse'});
-                // gradient
-*/
+
+                // tracks
+                this.group = this.svg.group();
+                this.group.setAttribute("transform", "scale(0.1, 0.1)");
                 path = svg.createPath();
                 var loc =  $(xmlTag).find('Track > MoveTo').get(0);
                 path = path.move($(loc).attr('x'), $(loc).attr('y'), false);
                 $(xmlTag).find('Track').children().each ( function () {
                         var xmlTag = this;
                         if(this.tagName == 'MoveTo') {
-                               path = path.line($(xmlTag).attr('x'), $(xmlTag).attr('y'), false);
+                            path = path.line($(xmlTag).attr('x'), $(xmlTag).attr('y'), false);
+                            svg.circle($(xmlTag).attr('x'), $(xmlTag).attr('y'), 100, {fill: 'yellow', stroke: 'blue', strokeWidth: 0, mask: "url(#WordMask)", transform: "scale(0.1)"});
                         }
                 });
-                svg.path(handler.group, path, 
-                        {fill: 'black', stroke: '#000000', strokeWidth: 10});
-                this.group.setAttribute("transform", "scale(0.1, 0.1)");
+                svg.path(handler.group, path, {fill: 'red', stroke: '#000000', strokeWidth: 10, mask: "url(#WordMask)"});
         },
 
         _drawOutline: function(xmlTag, path) {
