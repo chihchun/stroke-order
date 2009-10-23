@@ -21,7 +21,7 @@ $.extend(StrokeHandler.prototype, {
         },
 
         loadWord: function () {
-             var p = this;
+             var handler = this;
              // create a new svg
              $('#svgbasics').svg();
              // get the svg 
@@ -32,9 +32,9 @@ $.extend(StrokeHandler.prototype, {
                 // url: "C1A6.xml",
                 dataType: "xml",
 		success: function(xml) {
-                    p._xml = $(xml);
+                    handler._xml = $(xml);
                     $(xml).find('Stroke').each(function() {
-                        p.drawStroke(this);
+                        handler.drawStroke(this);
                     });
 		}
 	     });
