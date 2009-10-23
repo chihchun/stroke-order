@@ -28,8 +28,8 @@ $.extend(StrokeHandler.prototype, {
              this.svg = $('#svgbasics').svg('get');
              $.ajax({
                 type: "GET",
-                // url: "B3B0.xml",
-                url: "C1A6.xml",
+                url: "B3B0.xml",
+                // url: "C1A6.xml",
                 dataType: "xml",
 		success: function(xml) {
                     p._xml = $(xml);
@@ -52,7 +52,7 @@ $.extend(StrokeHandler.prototype, {
                         path = svg.createPath();
                         $(this).children().each( function () {
                             handler._drawOutline(this, path);
-                            });
+                        });
                         svg.path(handler.group, path, 
                             {fill: 'none', stroke: '#D90000', strokeWidth: 1});
                 });
@@ -64,16 +64,17 @@ $.extend(StrokeHandler.prototype, {
                         {gradientUnits: 'userSpaceOnUse'});
                 // gradient
 */
-                // path = svg.createPath();
+                path = svg.createPath();
+                var loc =  $(xmlTag).find('Track > MoveTo').get(0);
+                path = path.move($(loc).attr('x'), $(loc).attr('y'), false);
                 $(xmlTag).find('Track').children().each ( function () {
                         var xmlTag = this;
                         if(this.tagName == 'MoveTo') {
-                                path.line($(xmlTag).attr('x'), $(xmlTag).attr('y'), false);
-                                // path = path.move($(xmlTag).attr('x'), $(xmlTag).attr('y'), false);
-                                svg.path(handler.group, path, 
-                                    {fill: 'none', stroke: '#000000', strokeWidth: 10});
+                               path = path.line($(xmlTag).attr('x'), $(xmlTag).attr('y'), false);
                         }
                 });
+                svg.path(handler.group, path, 
+                        {fill: 'black', stroke: '#000000', strokeWidth: 10});
                 this.group.setAttribute("transform", "scale(0.1, 0.1)");
         },
 
