@@ -50,7 +50,16 @@ $.extend(StrokeHandler.prototype, {
             this.svg.clear();
 	},
 
-	playback: function () {
+        playback: function () {
+             var handle = this;
+             this.playtrack();
+             function play () {
+                 handle.playback();
+             }
+             setTimeout(play, 150);
+        },
+
+	playtrack: function () {
             var path = this.path;
             var svg = this.svg;
 
@@ -90,7 +99,6 @@ $.extend(StrokeHandler.prototype, {
             this.trackN++;
             this.path = path;
 	},
-	
 
         drawStroke: function (xmlTag, strokeNum) {
             var handler = this;

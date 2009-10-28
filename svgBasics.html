@@ -15,16 +15,10 @@
 
 <script type="text/javascript">
 var stroke;
-function playback() {
-	stroke.playback();
-	setTimeout("playback();", 200);
-}
 $(document).ready(function(){
         stroke = $('#svgbasics').stroke();
         stroke.draw();
-        // wait for it's been ready
-        playback();
-	
+	stroke.playback();
 });
 </script>
 
