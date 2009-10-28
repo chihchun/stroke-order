@@ -19,6 +19,8 @@ function StrokeHandler (root) {
    this.strokeN = 0;
    this.trackN = 0;
    this.path;
+
+   this.isDone = 0;
 }
 
 $.extend(StrokeHandler.prototype, {
@@ -32,8 +34,7 @@ $.extend(StrokeHandler.prototype, {
 
              $.ajax({
                 type: "GET",
-                url: "B3B0.xml",
-                // url: "C1A6.xml",
+                url: "A676.xml",
                 dataType: "xml",
 		success: function(xml) {
                     handler._xml = $(xml);
@@ -46,8 +47,12 @@ $.extend(StrokeHandler.prototype, {
 	     });
         },
 
-	clean: function () {
+	clear: function () {
+            this.strokeN = 0;
+            this.trackN = 0;
+            this.isDone = 0;
             this.svg.clear();
+            this.draw();
 	},
 
         playback: function () {
@@ -56,7 +61,8 @@ $.extend(StrokeHandler.prototype, {
              function play () {
                  handle.playback();
              }
-             setTimeout(play, 150);
+             if(this.isDone == 0)
+                 setTimeout(play, 100);
         },
 
 	playtrack: function () {
@@ -74,6 +80,7 @@ $.extend(StrokeHandler.prototype, {
 
             var stroke = this._xml.find('Stroke');
             if(stroke.length < this.strokeN) {
+                this.isDone = 1;
                 return;
             }
 
@@ -94,7 +101,7 @@ $.extend(StrokeHandler.prototype, {
             svg.circle(group, $(track).attr('x'), $(track).attr('y'), 100, 
                     {fill: 'black', stroke: 'blue', strokeWidth: 0});
             svg.path(group, path, 
-                    {fill: 'red', stroke: 'black', strokeWidth: 100});
+                    {fill: 'black', stroke: 'black', strokeWidth: 250});
 
             this.trackN++;
             this.path = path;

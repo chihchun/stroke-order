@@ -18,7 +18,12 @@ var stroke;
 $(document).ready(function(){
         stroke = $('#svgbasics').stroke();
         stroke.draw();
-	stroke.playback();
+        stroke.playback();
+
+        $("#play").click(function () { 
+            stroke.clear();
+            stroke.playback();
+        });
 });
 </script>
 
