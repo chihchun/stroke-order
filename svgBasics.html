@@ -14,9 +14,17 @@
 <script type="text/javascript" src="stroke.js"></script>
 
 <script type="text/javascript">
+var stroke;
+function playback() {
+	stroke.playback();
+	setTimeout("playback();", 150);
+}
 $(document).ready(function(){
-        var stroke = $('#svgbasics').stroke();
+        stroke = $('#svgbasics').stroke();
         stroke.draw();
+        // wait for it's been ready
+        playback();
+	
 });
 </script>
 
