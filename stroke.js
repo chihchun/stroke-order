@@ -1,6 +1,6 @@
 /*
  * Authors:
- * Rex Tsai (chihchun@kalug.linux.org.tw)
+ * Rex Tsai (chihchun@kalug.linux.org.tw, http://people.debian.org.tw/~chihchun)
  * Thinker Li (thinker@branda.to)
  *
  * Licensed under the GPL (http://dev.jquery.com/browser/trunk/jquery/GPL-LICENSE.txt)
